@@ -4,42 +4,15 @@
 
 ---
 
-## Dataset
+## Dataset utilisé
 
 **Fichier :** `Fraud_Detection_Dataset.csv`
-
-| Propriété | Valeur |
-|-----------|--------|
-| Nombre de transactions | 51 000 |
-| Nombre de variables | 12 |
-| Variable cible | `Fraudulent` (0 = légitime, 1 = fraude) |
-| Déséquilibre des classes | ~95% légitimes / ~5% fraudes |
-| Valeurs manquantes | ~5% par colonne |
-
-**Variables disponibles :**
-
-| Variable | Type | Description |
-|----------|------|-------------|
-| `Transaction_ID` | ID | Identifiant unique — supprimé (non prédictif) |
-| `User_ID` | ID | Identifiant utilisateur — supprimé (non prédictif) |
-| `Transaction_Amount` | Numérique | Montant de la transaction (€) |
-| `Transaction_Type` | Catégorielle | ATM Withdrawal, Online Purchase, POS Payment... |
-| `Time_of_Transaction` | Numérique | Heure de la transaction (0–23) |
-| `Device_Used` | Catégorielle | Mobile, Desktop, Tablet |
-| `Location` | Catégorielle | Ville de la transaction |
-| `Previous_Fraudulent_Transactions` | Numérique | Historique de fraudes de l'utilisateur |
-| `Account_Age` | Numérique | Ancienneté du compte (mois) |
-| `Number_of_Transactions_Last_24H` | Numérique | Activité récente |
-| `Payment_Method` | Catégorielle | Credit Card, Debit Card, UPI, Net Banking |
-| `Fraudulent` | Cible | 0 = légitime, 1 = fraude |
-
----
 
 ## Structure du projet
 
 ```
-├── Fraud_Detection_Dataset.csv          # Dataset brut
-├── TP_Arbre_de_decision.ipynb           # Notebook 
+├── Fraud_Detection_Dataset.csv          
+├── TP_Arbre_de_decision.ipynb          
 └── README.md                            
 ```
 
@@ -49,7 +22,7 @@
 
 ### Phase 0 — Imports
 
-Chargement des librairies nécessaires : `numpy`, `pandas`, `matplotlib`, `seaborn`, et les modules scikit-learn (`model_selection`, `tree`, `metrics`, `preprocessing`).
+Chargement des librairies nécessaires : `numpy`, `pandas`, `matplotlib`, `seaborn`,et `scikit-learn` .
 
 ---
 
@@ -60,7 +33,6 @@ Chargement des librairies nécessaires : `numpy`, `pandas`, `matplotlib`, `seabo
 **Traduction ML :**
 - Type de problème : Classification binaire
 - Variable cible Y : `Fraudulent`
-- Métrique prioritaire : **Recall fraude** (manquer une fraude est plus grave que bloquer une transaction légitime)
 
 ---
 
@@ -74,13 +46,12 @@ Chargement des librairies nécessaires : `numpy`, `pandas`, `matplotlib`, `seabo
 - Légitime (0) : 48 499 transactions — 95,10 %
 - Fraude (1) : 2 501 transactions — 4,90 %
 
-→ Déséquilibre modéré, nécessite l'utilisation de `class_weight='balanced'`.
 
 **2.4 Valeurs manquantes :** Environ 5 % de valeurs manquantes détectées sur plusieurs colonnes (`Transaction_Amount`, `Time_of_Transaction`, `Device_Used`, `Location`, `Payment_Method`).
 
 **2.5 Statistiques descriptives :** Les variables V numériques affichent des distributions variées. `Transaction_Amount` présente des valeurs extrêmes côté fraude.
 
-**2.6 Analyse catégorielle :** Visualisation du taux de fraude par modalité sur `Transaction_Type`, `Device_Used`, `Payment_Method`. Certaines modalités concentrent davantage de fraudes.
+**2.6 Analyse catégorielle :** Visualisation du taux de fraude par modalité sur `Transaction_Type`, `Device_Used`, `Payment_Method`. 
 
 **2.7 Variables numériques vs fraude :** Boxplots comparatifs — `Transaction_Amount`, `Time_of_Transaction` et `Account_Age` présentent des distributions légèrement différentes entre les deux classes.
 
@@ -104,7 +75,7 @@ Utilisation du **One-Hot Encoding** (`pd.get_dummies`) sur `Transaction_Type`, `
 
 **3.5 Split train / test (80/20) :**
 - `stratify=y` utilisé pour conserver les proportions de classes dans chaque split
-- `random_state=42` pour la reproductibilité
+- `random_state=42` pour assurer le mélange dans les splits
 - Train : 40 800 lignes | Test : 10 200 lignes
 
 ---
@@ -119,7 +90,7 @@ Trois modèles ont été entraînés, tous avec `class_weight='balanced'` pour c
 | Modèle 2 | Entropie | 3 |
 | Modèle 3 | Gini | Aucune limite |
 
-**Exploration de max_depth (1 à 15) :** Le recall fraude sur le test est maximal à **max_depth = 10** (recall ≈ 0.58). Au-delà, le recall test se dégrade malgré l'amélioration sur le train, signe de surapprentissage.
+**Exploration de max_depth (1 à 15) :** Le recall fraude sur le test est maximal à **max_depth = 10** (recall ≈ 0.58).
 
 ---
 
@@ -151,7 +122,7 @@ Trois modèles ont été entraînés, tous avec `class_weight='balanced'` pour c
 | **Réel Légitime** | 6 387 (TN) | 3 311 (FP) |
 | **Réel Fraude** | 357 (FN)  | 145 (TP) |
 
-**Interprétation financière :**
+**Interprétation :**
 - **357 fraudes non détectées** (faux négatifs) → montant moyen par fraude manquée : 2 785 € → **~961 000 € de pertes non couvertes**
 - **3 311 transactions légitimes bloquées à tort** (faux positifs) → impact négatif sur l'expérience client
 
@@ -208,8 +179,7 @@ Le modèle arbre de décision (Gini, `max_depth=3`) **n'est pas encore prêt pou
 - ~961 000 € de fraudes non détectées sur le jeu de test
 
 ### Recommandations
-
-- Abaisser le seuil de décision (threshold < 0.5) pour favoriser la détection
+- Ajuster le seuil de décision (threshold) en dessous de 0.5 pour favoriser la détection des fraudes.
 - Tester des algorithmes plus puissants : **Random Forest**, **XGBoost**, **LightGBM**
 - Mettre en place une **validation croisée** pour une évaluation plus robuste
 
