@@ -158,18 +158,7 @@ L'Entropie détecte légèrement plus de fraudes (recall 0.40 vs 0.29) mais au p
 ---
 
 
-**L'indice de Gini** mesure l'impureté d'un nœud. À chaque division, l'arbre cherche la coupure qui minimise le Gini des deux sous-groupes résultants :
 
-```
-Gini = 1 − Σ pᵢ²
-```
-
-- Gini = 0 → nœud pur (une seule classe)
-- Gini = 0.5 → mélange parfait 50/50
-
-**CART** (Classification and Regression Trees) est l'algorithme utilisé par scikit-learn pour construire les arbres de décision. Il produit des **arbres binaires** (exactement 2 branches à chaque nœud) et utilise **Gini par défaut** pour la classification. C'est pourquoi `DecisionTreeClassifier()` sans paramètre applique automatiquement ce critère.
-
----
 
 ## Conclusion
 
